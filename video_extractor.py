@@ -1,4 +1,3 @@
-from cProfile import label
 from utils import model_loader
 
 import numpy as np
@@ -6,7 +5,6 @@ import numpy as np
 import cv2
 import argparse
 import logging
-import time
 
 import mmcv
 from mmdet.apis import inference_detector
