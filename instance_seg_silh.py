@@ -4,23 +4,36 @@ from mmcv.runner import load_checkpoint
 from mmdet.apis import inference_detector
 from mmdet.models import build_detector
 from mmdet.core import get_classes
+from torch.cuda import is_available
 
 import numpy as np
 import argparse
 
 import warnings
 import time
+import errno
+import os
 
 def init():
     # Choose to use a config and initialize the detector
     config = 'configs/scnet/scnet_r50_fpn_1x_coco.py'
+    
+    if not os.path.isfile(config):
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), config
+        )
 
     # Setup a checkpoint file to load
     checkpoint = 'checkpoints/'\
         'scnet_r50_fpn_1x_coco-c3f09857.pth'
+        
+    if not os.path.isfile(checkpoint):
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), checkpoint
+        )
 
     # Set the device to be used for evaluation
-    device = "cuda:0"
+    device = "cuda:0" if is_available() else "cpu"
 
     # Load the config
     config = mmcv.Config.fromfile(config)
@@ -51,12 +64,12 @@ def main():
 
     parser = argparse.ArgumentParser(description="Silhouette Extractor Using HTC")
     parser.add_argument(
-        "--input",
+        "-i", "--input",
         type=str,
         help="The path to the image file.",
     )
     parser.add_argument(
-        "--output",
+        "-o", "--output",
         type=str,
         help="Output path. Make sure the directory exists.",
     )
@@ -70,6 +83,16 @@ def main():
     opt = parser.parse_args()
 
     img_path = opt.input
+    
+    if not os.path.isfile(opt.input):
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), opt.input
+        )
+        
+    if not os.path.isfile(opt.output):
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), opt.output
+        )
     
     model = init()
 
@@ -87,7 +110,7 @@ def main():
 
     classes = get_classes("coco")
     labels_impt_list = [labels[i] for i in labels_impt]
-    labels_class = [classes[i] for i in labels_impt_list]
+    # labels_class = [classes[i] for i in labels_impt_list]
 
     segms = mmcv.concat_list(segm_results)
     inds = np.where(bboxes[:, -1] > opt.threshold)[0]
