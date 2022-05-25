@@ -36,6 +36,12 @@ def main():
         help="Output path. Make sure the directory exists.",
     )
     parser.add_argument(
+        "-m", "--multiple",
+        type=bool,
+        action=argparse.BooleanOptionalAction,
+        help="Toggles detecting multiple people.",
+    )
+    parser.add_argument(
         "--threshold",
         type=float,
         default=0.3,
@@ -75,18 +81,24 @@ def main():
     color_mask = np.array((255, 255, 255))
 
     logging.info("Finding humans...")
-    
+
     count = 0
+    count_list = []
     for i in labels_impt:
-        if i == 0:
-            break
+        if labels[i] == 0:
+            count_list.append(count)
+            count += 1
+            if not opt.multiple:
+                break
         else:
             count += 1
-    
+            
     img = mmcv.imread(img_path)
     h, w, _ = img.shape
     img_show = np.zeros((h, w, 3))
-    img_show[segms[count]] = img_show[segms[count]] * 1 + color_mask * 1
+
+    for i in count_list:
+        img_show[segms[i]] = img_show[segms[i]] * 1 + color_mask * 1
 
     end_time = time.perf_counter()
 

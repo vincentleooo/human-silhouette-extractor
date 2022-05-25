@@ -1,3 +1,4 @@
+from cProfile import label
 from utils import model_loader
 
 import numpy as np
@@ -9,6 +10,8 @@ import time
 
 import mmcv
 from mmdet.apis import inference_detector
+
+from tqdm import tqdm
 
 import sys
 import warnings
@@ -24,6 +27,12 @@ def argparser():
         "-o", "--output",
         type=str,
         help="Output path. Make sure the directory exists.",
+    )
+    parser.add_argument(
+        "-m", "--multiple",
+        type=bool,
+        action=argparse.BooleanOptionalAction,
+        help="Toggles detecting multiple people.",
     )
     parser.add_argument(
         "--threshold",
@@ -57,21 +66,14 @@ def main():
     out = cv2.VideoWriter(opt.output, cv2.VideoWriter_fourcc(
         'M', 'J', 'P', 'G'), 30, (frame_width, frame_height))
     
-    prev_frame_time = 0
-    new_frame_time = 0
-
-    seg_time = 0
-    # write_time = 0
-    
     model = model_loader.init()
-    
+
+    pbar = tqdm(total=video.get(cv2.CAP_PROP_FRAME_COUNT))
+
     while (video.isOpened):
         success, img = video.read()
         
         if success:
-            logging.info("Frame {} of {}:".format(video.get(cv2.CAP_PROP_POS_FRAMES), total_frames))
-        
-            start_time = time.perf_counter()
             result = inference_detector(model, img)
 
             bbox_result, segm_results = result
@@ -88,34 +90,32 @@ def main():
             color_mask = np.array((255, 255, 255))
             
             count = 0
+            count_list = []
             for i in labels_impt:
-                if i == 0:
-                    break
+                if labels[i] == 0:
+                    count_list.append(count)
+                    count += 1
+                    if not opt.multiple:
+                        break
                 else:
                     count += 1
                     
-
             h, w, _ = img.shape
             img_show = np.zeros((h, w, 3))
-            img_show[segms[count]] = img_show[segms[count]] * 1 + color_mask * 1
 
-            end_time = time.perf_counter()
-            
-            logging.info("Time taken to segment: {}".format(end_time - start_time))
-            
-            seg_time += end_time - start_time
+            for i in count_list:
+                img_show[segms[i]] = img_show[segms[i]] * 1 + color_mask * 1
             
             out.write((img_show).astype(np.uint8))
             
+            pbar.update(1)
             key = cv2.waitKey(10)
             if key == 27:
-                break
-            
-            if video.get(cv2.CAP_PROP_POS_FRAMES) == 5:
                 break
         else:
             break
     
+    pbar.close()
     cv2.destroyAllWindows()
     video.release()
     out.release()
