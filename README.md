@@ -1,6 +1,6 @@
-# Silhouette Extractor Using MMDetection [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# Human Silhouette Extractor Using MMDetection [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is a tool to extract silhouettes from images or videos using [MMDetection](https://github.com/open-mmlab/mmdetection). It uses the first model shown in the [SCNet](https://github.com/open-mmlab/mmdetection/tree/master/configs/scnet) page.
+This is a tool to extract human silhouettes from images or videos using [MMDetection](https://github.com/open-mmlab/mmdetection). It uses the first model shown in the [SCNet](https://github.com/open-mmlab/mmdetection/tree/master/configs/scnet) page.
 
 An example for images is shown below.
 
