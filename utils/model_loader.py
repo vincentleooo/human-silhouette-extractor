@@ -6,8 +6,18 @@ from torch.cuda import is_available
 
 import errno
 import os
+import logging
+import sys
+
+from utils.model_downloader import download
 
 def init():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)],
+    )
+
     # Choose to use a config and initialize the detector
     config = 'configs/scnet/scnet_r50_fpn_1x_coco.py'
     
@@ -21,9 +31,8 @@ def init():
         'scnet_r50_fpn_1x_coco-c3f09857.pth'
         
     if not os.path.isfile(checkpoint):
-        raise FileNotFoundError(
-            errno.ENOENT, os.strerror(errno.ENOENT), checkpoint
-        )
+        logging.warning("Checkpoint not found. Will attempt to download from MMDetection.")
+        download("https://download.openmmlab.com/mmdetection/v2.0/scnet/scnet_r50_fpn_1x_coco/scnet_r50_fpn_1x_coco-c3f09857.pth", dest_folder="checkpoints")
 
     # Set the device to be used for evaluation
     device = "cuda:0" if is_available() else "cpu"
