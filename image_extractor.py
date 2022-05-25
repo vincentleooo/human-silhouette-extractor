@@ -3,7 +3,6 @@ from mmcv.runner import load_checkpoint
 
 from mmdet.apis import inference_detector
 from mmdet.models import build_detector
-from mmdet.core import get_classes
 from torch.cuda import is_available
 
 import numpy as np
@@ -13,6 +12,9 @@ import warnings
 import time
 import errno
 import os
+
+import logging
+import sys
 
 def init():
     # Choose to use a config and initialize the detector
@@ -61,6 +63,12 @@ def init():
 
 def main():
     warnings.filterwarnings('ignore')
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)],
+    )
 
     parser = argparse.ArgumentParser(description="Silhouette Extractor Using HTC")
     parser.add_argument(
@@ -88,17 +96,17 @@ def main():
         raise FileNotFoundError(
             errno.ENOENT, os.strerror(errno.ENOENT), opt.input
         )
-        
-    if not os.path.isfile(opt.output):
-        raise FileNotFoundError(
-            errno.ENOENT, os.strerror(errno.ENOENT), opt.output
-        )
+    
+    logging.info("Initialising the model...")
     
     model = init()
 
     start_time = time.perf_counter()
+    
+    logging.info("Doing inference detection...")
     result = inference_detector(model, img_path)
 
+    logging.info("Processing the results...")
     bbox_result, segm_results = result
     labels = [
         np.full(bbox.shape[0], i, dtype=np.int32)\
@@ -108,17 +116,14 @@ def main():
     bboxes = np.vstack(bbox_result)
     labels_impt = np.where(bboxes[:, -1] > opt.threshold)[0]
 
-    classes = get_classes("coco")
-    labels_impt_list = [labels[i] for i in labels_impt]
-    # labels_class = [classes[i] for i in labels_impt_list]
-
     segms = mmcv.concat_list(segm_results)
-    inds = np.where(bboxes[:, -1] > opt.threshold)[0]
 
     color_mask = np.array((255, 255, 255))
 
+    logging.info("Finding humans...")
+    
     count = 0
-    for i in inds:
+    for i in labels_impt:
         if i == 0:
             break
         else:
@@ -131,9 +136,10 @@ def main():
 
     end_time = time.perf_counter()
 
+    logging.info("Writing image...")
     mmcv.imwrite(img_show, opt.output)
 
-    print(f"{end_time - start_time:.3f} seconds taken after model initialisation.")
+    logging.info(f"{end_time - start_time:.3f} seconds taken after model initialisation.")
 
 if __name__ == "__main__":
     main()
