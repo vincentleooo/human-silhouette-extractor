@@ -17,7 +17,7 @@ import sys
 import warnings
 
 def argparser():
-    parser = argparse.ArgumentParser(description="Silhouette Extractor Using HTC")
+    parser = argparse.ArgumentParser(description="Silhouette Extractor Using SCNet")
     parser.add_argument(
         "-i", "--input",
         type=str,
@@ -68,7 +68,7 @@ def main():
     
     model = model_loader.init()
 
-    pbar = tqdm(total=video.get(cv2.CAP_PROP_FRAME_COUNT))
+    pbar = tqdm(total=total_frames, unit='frames', desc='Analysing the frames')
 
     while (video.isOpened):
         success, img = video.read()
@@ -100,8 +100,7 @@ def main():
                 else:
                     count += 1
                     
-            h, w, _ = img.shape
-            img_show = np.zeros((h, w, 3))
+            img_show = np.zeros((frame_height, frame_width, 3))
 
             for i in count_list:
                 img_show[segms[i]] = img_show[segms[i]] * 1 + color_mask * 1
