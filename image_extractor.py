@@ -24,7 +24,7 @@ def main():
         handlers=[logging.StreamHandler(sys.stdout)],
     )
 
-    parser = argparse.ArgumentParser(description="Silhouette Extractor Using HTC")
+    parser = argparse.ArgumentParser(description="Silhouette Extractor Using SCNet")
     parser.add_argument(
         "-i", "--input",
         type=str,
