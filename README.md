@@ -64,4 +64,4 @@ This will use `image_extractor.py`.
                             
 ## Acknowledgement
 
-We would like to acknowledge the MMDetection and SCNet team for their great work, and also the insights gained from a long-closed [issue](https://github.com/open-mmlab/mmdetection/issues/248) in MMDetection. Everything in the `config` folder is attributed to MMDetection](https://github.com/open-mmlab/mmdetection).
+We would like to acknowledge the MMDetection and SCNet team for their great work, and also the insights gained from a long-closed [issue](https://github.com/open-mmlab/mmdetection/issues/248) in MMDetection. Everything in the `config` folder is attributed to [MMDetection](https://github.com/open-mmlab/mmdetection).
