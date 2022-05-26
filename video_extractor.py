@@ -66,9 +66,10 @@ def main():
     frame_width = int(video.get(3))
     frame_height = int(video.get(4))
     total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    origin_fps = int(video.get(cv2.CAP_PROP_FPS))
 
     out = cv2.VideoWriter(opt.output, cv2.VideoWriter_fourcc(
-        'M', 'J', 'P', 'G'), 30, (frame_width, frame_height))
+        'M', 'J', 'P', 'G'), origin_fps, (frame_width, frame_height))
     
     model = model_loader.init(opt.model)
 
@@ -120,8 +121,6 @@ def main():
     
     pbar.close()
     cv2.destroyAllWindows()
-    video.release()
-    out.release()
     video.release()
     out.release()
     
