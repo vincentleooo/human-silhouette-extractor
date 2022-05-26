@@ -104,7 +104,7 @@ def main():
     img_show = np.zeros((h, w, 3))
 
     for i in count_list:
-        img_show[segms[i]] = img_show[segms[i]] * 1 + color_mask * 1
+        img_show[segms[i]] = color_mask
 
     end_time = time.perf_counter()
 
