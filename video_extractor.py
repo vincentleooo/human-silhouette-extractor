@@ -15,7 +15,7 @@ import sys
 import warnings
 
 def argparser():
-    parser = argparse.ArgumentParser(description="Silhouette Extractor Using SCNet")
+    parser = argparse.ArgumentParser(description="Video Silhouette Extractor Using Various Instance Segmentation Models")
     parser.add_argument(
         "-i", "--input",
         type=str,
@@ -37,6 +37,12 @@ def argparser():
         type=float,
         default=0.3,
         help="Threshold for inference detector. Default: 0.3.",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default='scnet-r50-fpn',
+        help="Inference detector model choice. Default: 'scnet-r50-fpn'. Options: 'd-solo-light', 'scnet-r50-fpn'.",
     )
     
     opt = parser.parse_args()
@@ -64,7 +70,7 @@ def main():
     out = cv2.VideoWriter(opt.output, cv2.VideoWriter_fourcc(
         'M', 'J', 'P', 'G'), 30, (frame_width, frame_height))
     
-    model = model_loader.init()
+    model = model_loader.init(opt.model)
 
     pbar = tqdm(total=total_frames, unit='frames', desc='Analysing the frames')
 

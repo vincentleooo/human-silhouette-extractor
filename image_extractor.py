@@ -24,7 +24,7 @@ def main():
         handlers=[logging.StreamHandler(sys.stdout)],
     )
 
-    parser = argparse.ArgumentParser(description="Silhouette Extractor Using SCNet")
+    parser = argparse.ArgumentParser(description="Image Silhouette Extractor Using Various Instance Segmentation Models")
     parser.add_argument(
         "-i", "--input",
         type=str,
@@ -47,6 +47,12 @@ def main():
         default=0.3,
         help="Threshold for inference detector. Default: 0.3.",
     )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default='scnet-r50-fpn',
+        help="Inference detector model choice. Default: 'scnet-r50-fpn'. Options: 'd-solo-light', 'scnet-r50-fpn'.",
+    )
 
     opt = parser.parse_args()
 
@@ -59,7 +65,7 @@ def main():
     
     logging.info("Initialising the model...")
     
-    model = model_loader.init()
+    model = model_loader.init(opt.model)
 
     start_time = time.perf_counter()
     
