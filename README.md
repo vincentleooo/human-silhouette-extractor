@@ -1,6 +1,6 @@
 # Human Silhouette Extractor Using MMDetection [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is a tool to extract silhouettes from images or videos using [MMDetection](https://github.com/open-mmlab/mmdetection). It uses the first model shown in the [SCNet](https://github.com/open-mmlab/mmdetection/tree/master/configs/scnet) page by default. Currently providing out-of-the-box support for the [Decoupled Light SOLO](https://github.com/open-mmlab/mmdetection/tree/master/configs/solo) model as well for faster performance with the caveat that the silhouettes are far less refined in the edges.
+This is a tool to extract silhouettes from images or videos using [MMDetection](https://github.com/open-mmlab/mmdetection) through instance segmentation as opposed to the more commonly used semantic segmentation. It uses the first model shown in the [SCNet](https://github.com/open-mmlab/mmdetection/tree/master/configs/scnet) page by default. Currently providing out-of-the-box support for the [Decoupled Light SOLO](https://github.com/open-mmlab/mmdetection/tree/master/configs/solo) model as well for faster performance with the caveat that the silhouettes are far less refined in the edges.
 
 An example for images is shown below.
 
